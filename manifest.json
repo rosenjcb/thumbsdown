@@ -1,0 +1,30 @@
+{
+	"name": "LinkedIn Thumbsdown 👎",
+	"description": "Adds Thumbsdown Functionality to LinkedIn",
+	"version": "1.0",
+	"permissions": [
+		"activeTab",
+		"scripting"
+	],
+	"content_scripts": [
+		{
+			"matches": ["http://*/*", "https://*/*"],
+			"js": ["content.js"],
+			"css": ["styles.css"],
+			"run_at": "document_idle"
+		}
+	],
+	"web_accessible_resources": [{
+		"matches": ["<all_urls>"],
+		"resources": ["thumbsdown-removebg-preview.png"]
+	}],
+	"icons": {
+		"16": "thumbsdown-removebg-preview.png",
+		"48": "thumbsdown-removebg-preview.png",
+		"128": "thumbsdown-removebg-preview.png"
+	},
+	"action": {
+		"default_title": "Thumbsdown 👎"
+	},
+	"manifest_version": 3
+}

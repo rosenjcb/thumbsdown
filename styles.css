@@ -1,0 +1,38 @@
+.thumbs-down-button {
+   display: flex;
+   align-items: center;
+   padding-top: 10px;
+   padding-bottom: 10px; 
+   padding-left: 8px;
+   padding-right: 8px;
+   border-radius: 4px;
+}
+
+.thumbs-down-button:hover {
+   background-color: lightgrey;
+}
+
+.thumbsdown-logo {
+  width: 28px;
+  height: 28px;
+}
+
+.thumbs-down-count {
+   color: grey;
+}
+
+.info-text {
+   align-self: center;
+}
+
+.banner-content {
+   display: flex;
+   justify-content: center;
+   flex-direction: row;
+   width: 100%;
+   height: 40px;
+   border: 1px solid grey;
+   background-color: white;
+   border-radius: 4px;
+   margin-bottom: 4px;
+}
