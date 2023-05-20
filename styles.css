@@ -25,14 +25,26 @@
    align-self: center;
 }
 
+.dislike-text {
+   align-self: center;
+   color: red;
+   font-weight: bold;
+}
+
 .banner-content {
    display: flex;
    justify-content: center;
    flex-direction: row;
+   gap: 10px;
    width: 100%;
    height: 40px;
    border: 1px solid grey;
    background-color: white;
    border-radius: 4px;
    margin-bottom: 4px;
+}
+
+.banner-content:hover {
+   background-color: lightgrey;
+   cursor: pointer;
 }

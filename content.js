@@ -1,5 +1,3 @@
-console.log("before method");
-
 const targetNode = document.body;
 
 const config = { attributes: false, childList: true, subtree: true}
@@ -19,7 +17,11 @@ const callback = function(mutationList, observer) {
       let info = document.createElement("span");
       info.innerHTML = "Post hidden due to low approval rating.";
       info.className = "info-text";
+      let dislikeCount = document.createElement("span");
+      dislikeCount.innerHTML = "5 Dislikes";
+      dislikeCount.className = "dislike-text";
       banner.appendChild(info);
+      banner.appendChild(dislikeCount);
       banner.style.visibility = "hidden";
 
 
@@ -38,8 +40,6 @@ const callback = function(mutationList, observer) {
         thumbsDownButton.appendChild(text);
 
         thumbsDownButton.onclick = () => {
-          console.log('trying to hide element');
-          console.log(post);
           post.style.maxHeight = '0px';
           post.style.overflow = 'hidden';
 
@@ -47,6 +47,11 @@ const callback = function(mutationList, observer) {
           if(parent) {
             parent.appendChild(banner);
             banner.style.visibility = "visible";
+            banner.onclick = () => {
+              post.style.maxHeight = 'inherit';
+              post.style.overflow = 'inherit';
+              parent.removeChild(banner);
+            }
           }
         }
 
@@ -67,5 +72,3 @@ const callback = function(mutationList, observer) {
 const observer = new MutationObserver(callback);
 
 observer.observe(targetNode, config);
-
-console.log("after method");
