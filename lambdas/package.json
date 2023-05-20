@@ -1,0 +1,21 @@
+{
+  "name": "lambda-postgres-update",
+  "version": "1.0.0",
+  "description": "Thumbsdown Lambda Backend",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm run build && aws lambda update-function-code --function-name YOUR_LAMBDA_FUNCTION_NAME --zip-file fileb://./dist/index.zip"
+  },
+  "author": "Jacob Rosenzweig",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.100.0",
+    "pg": "^8.7.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.3.9",
+    "@types/pg": "^8.6.6",
+    "typescript": "^4.9.5"
+  }
+}
