@@ -1,15 +1,45 @@
 const targetNode = document.body;
+// const targetNode = document.body.querySelector('[aria-label^="Main Feed');
 
 const config = { attributes: false, childList: true, subtree: true}
 
-const callback = function(mutationList, observer) {
+const checkDislikeUrl = "https://k6lplf5k2zzz3ufa7wxi3unrze0bhslw.lambda-url.us-west-2.on.aws";
+const postDislikeUrl = "https://nf7ngejn5icfqe5rszetdz3mtm0rgvyk.lambda-url.us-west-2.on.aws";
+
+const hideOrDislikeAction = async (post, banner, activityId) => {
+  post.style.maxHeight = '0px';
+  post.style.overflow = 'hidden';
+
+  let parent = post.parentElement;
+  if(parent) {
+    parent.appendChild(banner);
+    banner.style.visibility = "visible";
+    banner.onclick = () => {
+      post.style.maxHeight = 'inherit';
+      post.style.overflow = 'inherit';
+      parent.removeChild(banner);
+    }
+  }
+  if(activityId) fetch(postDislikeUrl, {method: 'POST', body: JSON.stringify({activityId: activityId})})
+}
+
+const callback = async function(mutationList, observer) {
+  observer.disconnect();
+  setTimeout(() => {}, 3000);
+
   for(let mutation of mutationList) {
     let posts = mutation.target.querySelectorAll('[data-urn^="urn:li:activity"]');
 
     for(let post of posts) {
       if(post.getAttribute("thumbsdown-fulfilled")) {
+        console.log("this one is already enriched")
         continue;
       }
+
+      const activityId = post.getAttribute("data-urn").split(":").slice(-1)[0];
+      const activityResponse = await fetch(checkDislikeUrl, {method: 'POST', body: JSON.stringify({activityId: activityId})});
+
+      const activeDislikeCount = activityResponse.ok ? await activityResponse.json()['dislikeCount'] : 0;
 
       post.setAttribute("thumbsdown-fulfilled", true);
       let banner = document.createElement("div");
@@ -18,12 +48,11 @@ const callback = function(mutationList, observer) {
       info.innerHTML = "Post hidden due to low approval rating.";
       info.className = "info-text";
       let dislikeCount = document.createElement("span");
-      dislikeCount.innerHTML = "5 Dislikes";
+      dislikeCount.innerHTML = activeDislikeCount > 1 ? `${activeDislikeCount} Dislikes` : "1 Dislike";
       dislikeCount.className = "dislike-text";
       banner.appendChild(info);
       banner.appendChild(dislikeCount);
       banner.style.visibility = "hidden";
-
 
       let actionbar = post.querySelector('.feed-shared-social-action-bar'); 
 
@@ -39,21 +68,7 @@ const callback = function(mutationList, observer) {
         thumbsDownButton.appendChild(image);
         thumbsDownButton.appendChild(text);
 
-        thumbsDownButton.onclick = () => {
-          post.style.maxHeight = '0px';
-          post.style.overflow = 'hidden';
-
-          let parent = post.parentElement;
-          if(parent) {
-            parent.appendChild(banner);
-            banner.style.visibility = "visible";
-            banner.onclick = () => {
-              post.style.maxHeight = 'inherit';
-              post.style.overflow = 'inherit';
-              parent.removeChild(banner);
-            }
-          }
-        }
+        thumbsDownButton.onclick = () => {hideOrDislikeAction(post, banner, activityId)};
 
         actionbar.appendChild(thumbsDownButton);
       }
@@ -65,8 +80,14 @@ const callback = function(mutationList, observer) {
         thumbsDownCount.innerHTML = "0 dislikes";
         options.appendChild(thumbsDownCount);
       }
+
+      if(activeDislikeCount > 0) {
+        hideOrDislikeAction(post, banner, null); // hide the post but don't actively dislike it.
+      }
     }
   }
+
+  observer.observe(targetNode, config);
 }
 
 const observer = new MutationObserver(callback);
